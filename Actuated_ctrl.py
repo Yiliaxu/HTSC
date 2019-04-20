@@ -1,3 +1,4 @@
+demand_level = 8
 # -*- coding: UTF-8 -*-
 import os, sys
 import xml.etree.ElementTree as etree
@@ -12,7 +13,6 @@ from cvxopt import matrix,solvers
 from scipy.sparse import identity
 from collections import defaultdict
 
-
 import pdb
 
 if 'SUMO_HOME' in os.environ:
@@ -22,16 +22,16 @@ else:
 	sys.exit("please declare environment variable 'SUMO_HOME'")
 sumoBinary = "E:/software/sumo-win64-0.32.0/sumo-0.32.0/bin/sumo-gui"
 
-sumoCmd = [sumoBinary, "-c", "chj.sumocfg","--seed", str(random.randint(1,100))]
+sumoCmd = [sumoBinary, "-c", "AC"+str(demand_level)+".sumocfg","--seed", str(random.randint(1,100))]
 
 PORT = 8813
 import traci
 
-doc3 = etree.parse('D:\\Journal_paper\\hierarchical control based on Markov decision process and path-based signal control\\simulation\\loops_ctrl.xml')
+doc3 = etree.parse('./loops_ctrl.xml')
 LoopsRoot = doc3.getroot()
-doc4 = etree.parse('D:\\Journal_paper\\hierarchical control based on Markov decision process and path-based signal control\\simulation\\Chj_final.net.xml')
+doc4 = etree.parse('./Chj_final.net.xml')
 NetRoot = doc4.getroot()
-doc5 = etree.parse('D:\\Journal_paper\\hierarchical control based on Markov decision process and path-based signal control\\simulation\\PhaseLanesCont.xml')
+doc5 = etree.parse('./PhaseLanesCont.xml')
 PhaseLanesRoot = doc5.getroot()
 
 EdgesList = []
@@ -164,7 +164,7 @@ if __name__ == '__main__':
 				# print PhaseTime
 				
 
-	fp = open('D:\\Journal_paper\\hierarchical control based on Markov decision process and path-based signal control\\simulation\\ACTVehNum.xml','w')
+	fp = open('./ACVehNum'+str(demand_level)+'.xml','w')
 	
 	try:
 		VehNum_files.writexml(fp,indent='\t', addindent='\t',newl='\n',encoding="utf-8")

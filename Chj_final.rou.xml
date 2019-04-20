@@ -46,29 +46,29 @@
         <flow from="OrigionN5" id="n5-w3" number="100" route="n5-w3" to="DestinationW3"/>
         <flow from="OrigionW4" id="w4-s1" number="100" route="w4-s1" to="DestinationS1"/>
         <flow from="OrigionN7" id="n7-s3" number="100" route="n7-s3" to="DestinationS3"/>
-        <flow from="OrigionS2" id="s2-n7" number="60" route="s2-n7" to="DestinationN7"/>
+        <flow from="OrigionS2" id="s2-n7" number="100" route="s2-n7" to="DestinationN7"/>
         <flow from="OrigionS7" id="s7-n4" number="100" route="s7-n4" to="DestinationN4"/>
         <flow from="OrigionS4" id="s4-n5" number="100" route="s4-n5" to="DestinationN5"/>
-        <flow from="OrigionN1" id="n1-s6" number="60" route="n1-s6" to="DestinationS6"/>
+        <flow from="OrigionN1" id="n1-s6" number="100" route="n1-s6" to="DestinationS6"/>
         <flow from="OrigionS6" id="s6-w5" number="100" route="s6-w5" to="DestinationW5"/>
         <flow from="OrigionN3" id="n3-s7" number="100" route="n3-s7" to="DestinationS7"/>
         <flow from="OrigionN6" id="n6-e5" number="100" route="n6-e5" to="DestinationE5"/>
-        <flow from="OrigionS5" id="s5-e6" number="60" route="s5-e6" to="DestinationE6"/>
+        <flow from="OrigionS5" id="s5-e6" number="100" route="s5-e6" to="DestinationE6"/>
         <flow from="OrigionW8" id="w8-e4" number="100" route="w8-e4" to="DestinationE4"/>
-        <flow from="OrigionW3" id="w3-e3" number="60" route="w3-e3" to="DestinationE3"/>
-        <flow from="OrigionN2" id="n2-s8" number="60" route="n2-s8" to="DestinationS8"/>
+        <flow from="OrigionW3" id="w3-e3" number="100" route="w3-e3" to="DestinationE3"/>
+        <flow from="OrigionN2" id="n2-s8" number="100" route="n2-s8" to="DestinationS8"/>
         <flow from="OrigionE4" id="e4-w8" number="100" route="e4-w8" to="DestinationW8"/>
         <flow from="OrigionW7" id="w7-s2" number="100" route="w7-s2" to="DestinationS2"/>
-        <flow from="OrigionW2" id="w2-n6" number="60" route="w2-n6" to="DestinationN6"/>
-        <flow from="OrigionE3" id="e3-n3" number="60" route="e3-n3" to="DestinationN3"/>
-        <flow from="OrigionE1" id="e1-w5" number="60" route="e1-w5" to="DestinationW5"/>
-        <flow from="OrigionE5" id="e5-e1" number="60" route="e5-e1" to="DestinationE1"/>
+        <flow from="OrigionW2" id="w2-n6" number="100" route="w2-n6" to="DestinationN6"/>
+        <flow from="OrigionE3" id="e3-n3" number="100" route="e3-n3" to="DestinationN3"/>
+        <flow from="OrigionE1" id="e1-w5" number="100" route="e1-w5" to="DestinationW5"/>
+        <flow from="OrigionE5" id="e5-e1" number="100" route="e5-e1" to="DestinationE1"/>
         <flow from="OrigionS1" id="s1-w4" number="100" route="s1-w4" to="DestinationW4"/>
-        <flow from="OrigionE3" id="e3-s5" number="60" route="e3-s5" to="DestinationS5"/>
+        <flow from="OrigionE3" id="e3-s5" number="100" route="e3-s5" to="DestinationS5"/>
         <flow from="OrigionN4" id="n4-w2" number="100" route="n4-w2" to="DestinationW2"/>
         <flow from="OrigionW9" id="w9-n3" number="100" route="w9-n3" to="DestinationN3"/>
-        <flow from="OrigionW9" id="w9-n1" number="60" route="w9-n1" to="DestinationN1"/>
-        <flow from="OrigionW7" id="w7-s7" number="60" route="w7-s7" to="DestinationS7"/>
+        <flow from="OrigionW9" id="w9-n1" number="100" route="w9-n1" to="DestinationN1"/>
+        <flow from="OrigionW7" id="w7-s7" number="100" route="w7-s7" to="DestinationS7"/>
         <flow from="OrigionW5" id="w5-w9" number="100" route="w5-w9" to="DestinationW9"/>
     </interval>
 </flows>

@@ -1,4 +1,4 @@
-# -*- coding: UTF-8 -*-
+demand_level = 8
 import os, sys
 import xml.etree.ElementTree as etree
 import xml.dom.minidom as doc
@@ -15,23 +15,23 @@ from collections import defaultdict
 
 import pdb
 
-SUMO_HOME = "/usr/local/bin/sumo"
-tools = "/home/Arain/sumo-git/tools/"
-sys.path.append(tools)
+# SUMO_HOME = "/usr/local/bin/sumo"
+# tools = "/home/Arain/sumo-git/tools/"
+# sys.path.append(tools)
 
-sumoBinary = "/usr/local/bin/sumo"
-
-sumoCmd = [sumoBinary, "-c", "chj.sumocfg","--seed", str(random.randint(1,100))]
-
-
-# if 'SUMO_HOME' in os.environ:
-# 	tools = os.path.join(os.environ['SUMO_HOME'], 'tools')
-# 	sys.path.append(tools)
-# else:
-# 	sys.exit("please declare environment variable 'SUMO_HOME'")
-# sumoBinary = "E:/software/sumo-win64-0.32.0/sumo-0.32.0/bin/sumo-gui"
+# sumoBinary = "/usr/local/bin/sumo"
 
 # sumoCmd = [sumoBinary, "-c", "chj.sumocfg","--seed", str(random.randint(1,100))]
+
+
+if 'SUMO_HOME' in os.environ:
+	tools = os.path.join(os.environ['SUMO_HOME'], 'tools')
+	sys.path.append(tools)
+else:
+	sys.exit("please declare environment variable 'SUMO_HOME'")
+sumoBinary = "E:/software/sumo-win64-0.32.0/sumo-0.32.0/bin/sumo"
+
+sumoCmd = [sumoBinary, "-c", "FTC"+str(demand_level)+".sumocfg","--seed", str(random.randint(1,100))]
 
 PORT = 8813
 import traci
@@ -46,7 +46,7 @@ import traci
 # NetRoot = doc4.getroot()
 
 
-doc1 = etree.parse('./TLSAction.xml')
+doc1 = etree.parse('./TLSAction1.xml')
 ActionRoot = doc1.getroot()
 doc2 = etree.parse('./Chj_final.rou.xml')
 RouteRoot = doc2.getroot()
@@ -67,20 +67,23 @@ VehNum = VehNum_files.createElement('VehicleNumber')
 VehNum_files.appendChild(VehNum)
 
 
-def get_random_phasetime(PhaseNum,Tc):
-	PhaseTime = np.zeros(PhaseNum)
-	for i in xrange(PhaseNum):
-		PhaseTime[i]=random.randint(0,Tc-np.sum(PhaseTime[0:i]))
-	PhaseTime[-1]=Tc-np.sum(PhaseTime[0:-1])
+# def get_random_phasetime(PhaseNum,Tc):
+# 	PhaseTime = np.zeros(PhaseNum)
+# 	for i in xrange(PhaseNum):
+# 		PhaseTime[i]=random.randint(0,Tc-np.sum(PhaseTime[0:i]))
+# 	PhaseTime[-1]=Tc-np.sum(PhaseTime[0:-1])
 	
-	for i in xrange(PhaseNum):
-		List_PhaseTime = PhaseTime.tolist()
-		if List_PhaseTime[i]<10:
-			max_index = List_PhaseTime.index(max(List_PhaseTime))
-			PhaseTime[max_index]=PhaseTime[max_index]-(10-PhaseTime[i])
-			PhaseTime[i]=10
+# 	for i in xrange(PhaseNum):
+# 		# List_PhaseTime = PhaseTime.tolist()
+# 		if List_PhaseTime[i]<10:
+# 			max_index = List_PhaseTime.index(max(List_PhaseTime))
+# 			PhaseTime[max_index]=PhaseTime[max_index]-(10-PhaseTime[i])
+# 			PhaseTime[i]=10
 
-	return PhaseTime
+# 	return PhaseTime
+
+
+
 
 
 ##############################################################################################################
@@ -91,17 +94,30 @@ if __name__ == '__main__':
 	Tsim = 3600
 	Tc = 60
 
-	ActionInfo=defaultdict(lambda:0)
-	PhaseTime=defaultdict(lambda:0)
+	### initialize the signal settings for all controlled intersections
+	ActionInfo = defaultdict(lambda: 0)
+	PhaseTime = defaultdict(dict)
 	for intersection in ActionRoot.findall('Intersection'):
 		intersection_id = intersection.get('id')
 		PhaseNum = int(intersection.get('PhaseNum'))
-		PhaseTime[intersection_id]= get_random_phasetime(PhaseNum,Tc)  #np.ones(PhaseNum)*int(Tc/PhaseNum)
+		if PhaseNum == 2:
+			PhaseTime[intersection_id][1] = np.hstack((np.ones(Tc / 2), np.zeros(Tc / 2)))
+			PhaseTime[intersection_id][2] = np.hstack((np.zeros(Tc / 2), np.ones(Tc / 2)))
+		elif PhaseNum == 3:
+			PhaseTime[intersection_id][1] = np.hstack((np.ones(Tc / 3), np.zeros(2 * Tc / 3)))
+			PhaseTime[intersection_id][2] = np.hstack((np.zeros(Tc / 3), np.ones(Tc / 3), np.zeros(Tc / 3)))
+			PhaseTime[intersection_id][3] = np.hstack((np.zeros(2 * Tc / 3), np.ones(Tc / 3)))
+		elif PhaseNum == 4:
+			PhaseTime[intersection_id][1] = np.hstack((np.ones(Tc / 4), np.zeros(3 * Tc / 4)))
+			PhaseTime[intersection_id][2] = np.hstack((np.zeros(Tc / 4), np.ones(Tc / 4), np.zeros(Tc / 2)))
+			PhaseTime[intersection_id][3] = np.hstack((np.zeros(Tc / 2), np.ones(Tc / 4), np.zeros(Tc / 4)))
+			PhaseTime[intersection_id][4] = np.hstack((np.zeros(3 * Tc / 4), np.ones(Tc / 4)))
+        # np.ones(PhaseNum)*int(Tc/PhaseNum) #get_random_phasetime(PhaseNum,Tc)
 		PhaseAction = []
 		for i in xrange(PhaseNum):
-			PhaseAction.append(intersection.get('phase'+str(i+1)))
-		ActionInfo[intersection_id]=PhaseAction
-	print PhaseTime
+			PhaseAction.append(intersection.get('phase' + str(i + 1)))
+		ActionInfo[intersection_id] = PhaseAction
+     
 
 	# print ActionInfo
 	# print PhaseTime
@@ -113,7 +129,7 @@ if __name__ == '__main__':
 
 	for i in range(Tsim):
 		traci.simulationStep()
-		Counter = Counter + 1
+		
 
 		for edge in EdgesList:
 			edge_id = edge[2:]
@@ -123,33 +139,33 @@ if __name__ == '__main__':
 
 		############################################################################################################################
 		####################################-------------Implement the signal setting--------------###################################
-		for id in PhaseTime.keys():
-			PhaseLen = PhaseTime[id]
-			PhaseNum = len(PhaseLen)
-			if PhaseNum==2:
-				if Counter<=PhaseLen[0]:
-					traci.trafficlights.setRedYellowGreenState(id,ActionInfo[id][0])
-				elif Counter>PhaseLen[0] and Counter<=Tc:
-					traci.trafficlights.setRedYellowGreenState(id,ActionInfo[id][1])	
+		# for id in PhaseTime.keys():
+		# 	PhaseLen = PhaseTime[id]
+		# 	PhaseNum = len(PhaseLen)
+		# 	if PhaseNum==2:
+		# 		if Counter<=PhaseLen[0]:
+		# 			traci.trafficlights.setRedYellowGreenState(id,ActionInfo[id][0])
+		# 		elif Counter>PhaseLen[0] and Counter<=Tc:
+		# 			traci.trafficlights.setRedYellowGreenState(id,ActionInfo[id][1])	
 
-			if PhaseNum==3:
-				if Counter<=PhaseLen[0]:
-					traci.trafficlights.setRedYellowGreenState(id,ActionInfo[id][0])
-				elif Counter>PhaseLen[0] and Counter<=PhaseLen[0]+PhaseLen[1]:
-					traci.trafficlights.setRedYellowGreenState(id,ActionInfo[id][1])
-				elif Counter>PhaseLen[0]+PhaseLen[1] and Counter<=Tc:
-					traci.trafficlights.setRedYellowGreenState(id,ActionInfo[id][2])
+		# 	if PhaseNum==3:
+		# 		if Counter<=PhaseLen[0]:
+		# 			traci.trafficlights.setRedYellowGreenState(id,ActionInfo[id][0])
+		# 		elif Counter>PhaseLen[0] and Counter<=PhaseLen[0]+PhaseLen[1]:
+		# 			traci.trafficlights.setRedYellowGreenState(id,ActionInfo[id][1])
+		# 		elif Counter>PhaseLen[0]+PhaseLen[1] and Counter<=Tc:
+		# 			traci.trafficlights.setRedYellowGreenState(id,ActionInfo[id][2])
 
 
-			if PhaseNum==4:
-				if Counter<=PhaseLen[0]:
-					traci.trafficlights.setRedYellowGreenState(id,ActionInfo[id][0])
-				elif Counter>PhaseLen[0] and Counter<=PhaseLen[0]+PhaseLen[1]:
-					traci.trafficlights.setRedYellowGreenState(id,ActionInfo[id][1])
-				elif Counter>PhaseLen[0]+PhaseLen[1] and Counter<=PhaseLen[0]+PhaseLen[1]+PhaseLen[2]:
-					traci.trafficlights.setRedYellowGreenState(id,ActionInfo[id][2])
-				elif Counter>PhaseLen[0]+PhaseLen[1]+PhaseLen[2] and Counter<=Tc:
-					traci.trafficlights.setRedYellowGreenState(id,ActionInfo[id][3])
+		# 	if PhaseNum==4:
+		# 		if Counter<=PhaseLen[0]:
+		# 			traci.trafficlights.setRedYellowGreenState(id,ActionInfo[id][0])
+		# 		elif Counter>PhaseLen[0] and Counter<=PhaseLen[0]+PhaseLen[1]:
+		# 			traci.trafficlights.setRedYellowGreenState(id,ActionInfo[id][1])
+		# 		elif Counter>PhaseLen[0]+PhaseLen[1] and Counter<=PhaseLen[0]+PhaseLen[1]+PhaseLen[2]:
+		# 			traci.trafficlights.setRedYellowGreenState(id,ActionInfo[id][2])
+		# 		elif Counter>PhaseLen[0]+PhaseLen[1]+PhaseLen[2] and Counter<=Tc:
+		# 			traci.trafficlights.setRedYellowGreenState(id,ActionInfo[id][3])
 			
 
 		if Counter==Tc:			
@@ -176,9 +192,18 @@ if __name__ == '__main__':
 			# 		PhaseNum = int(intersection.get('PhaseNum'))
 			# 		PhaseTime[intersection_id]=get_random_phasetime(PhaseNum,Tc)
 				# print PhaseTime
-				
 
-	fp = open('./VehNum.xml','w')
+		for id in PhaseTime.keys():  ##PhaseTime={intersection_id:{phasesequence:[0 0 0 1 1 0 0]}}
+			PhaseNum = len(PhaseTime[id])
+			for phase in PhaseTime[id].keys():
+				# print Counter
+				if PhaseTime[id][phase][Counter] == 1:
+					traci.trafficlights.setRedYellowGreenState(id, ActionInfo[id][phase - 1])
+					break
+
+		Counter = Counter + 1
+
+	fp = open('./FTCVehNum'+str(demand_level)+'.xml','w')
 	
 	try:
 		VehNum_files.writexml(fp,indent='\t', addindent='\t',newl='\n',encoding="utf-8")

@@ -233,6 +233,25 @@ class Coefficients():
 			row = row+tc
 
 
+		###############################signal inequation constraints##################################################
+		##s1+s3-s2<1
+		temp = np.array([[1,-1,1,0,0,0],[0,1,-1,1,0,0],[0,0,1,-1,1,0],[0,0,0,1,-1,1],[1,-1,0,1,0,0],[0,1,-1,0,1,0],[0,0,1,-1,0,1,],[1,-1,0,0,1,0],[0,1,-1,0,0,1],[1,-1,0,0,0,1]])
+		num = len(temp)
+		for j in xrange(self.slen):
+			sL = j
+			s_Ineq[row:row+num,sL*tc:(sL+1)*tc]=temp
+			b_Ineq[row:row+num]=np.ones(num)
+			row = row+num
+
+		#### sum(s)>1
+		for j in xrange(self.slen):
+			sL = j
+			s_Ineq[row,sL*tc:(sL+1)*tc]=-1*np.ones((1,tc))
+			b_Ineq[row]=-1
+			row = row+1
+
+
+
 		############################# auxilary constraints ################################
 		emin = -1000000
 		emax = 1000000
@@ -268,22 +287,7 @@ class Coefficients():
 
 
 
-        ###############################signal inequation constraints##################################################
-		##s1+s3-s2<1
-		temp = np.array([[1,-1,1,0,0,0],[0,1,-1,1,0,0],[0,0,1,-1,1,0],[0,0,0,1,-1,1],[1,-1,0,1,0,0],[0,1,-1,0,1,0],[0,0,1,-1,0,1,],[1,-1,0,0,1,0],[0,1,-1,0,0,1],[1,-1,0,0,0,1]])
-		num = len(temp)
-		for j in xrange(self.slen):
-			sL = j
-			s_Ineq[row:row+num,sL*tc:(sL+1)*tc]=temp
-			b_Ineq[row:row+num]=np.ones(num)
-			row = row+num
-
-		#### sum(s)>1
-		for j in xrange(self.slen):
-			sL = j
-			s_Ineq[row,sL*tc:(sL+1)*tc]=-1*np.ones((1,tc))
-			b_Ineq[row]=-1
-			row = row+1
+        
 
 		############################# constraints from upper level #######################################
 		# connections = self.action_constraints.keys()
